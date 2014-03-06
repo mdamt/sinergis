@@ -1,0 +1,46 @@
+{
+  "name": "sinergis",
+  "version": "0.0.1",
+  "description": "koa-based app server",
+  "main": "index.js",
+  "scripts": {
+    "start": "make dev",
+    "test": "make dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/diorahman/kriting-sinergis"
+  },
+  "keywords": [
+    "koa",
+    "app",
+    "server",
+    "static",
+    "api"
+  ],
+  "author": "Dhi Aurrahman <diorahman@rockybars.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/diorahman/kriting-sinergis/issues"
+  },
+  "homepage": "https://github.com/diorahman/kriting-sinergis",
+  "devDependencies": {
+    "should": "^3.1.3",
+    "mocha": "^1.17.1"
+  },
+  "dependencies": {
+    "koa": "~0.5.0",
+    "koa-router": "~3.1.0",
+    "koa-compose": "~2.2.0",
+    "koa-error": "~1.1.1",
+    "koa-jwt": "0.0.2",
+    "jsonwebtoken": "~0.1.0",
+    "koa-mount": "~1.2.3",
+    "co-views": "~0.2.0",
+    "swig": "~1.3.2",
+    "co-body": "0.0.1",
+    "thunkify": "0.0.1",
+    "koa-static": "~1.4.3",
+    "koa-session-store": "~0.1.0"
+  }
+}
