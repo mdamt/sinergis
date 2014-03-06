@@ -9,8 +9,7 @@ var koa = require ("koa");
 var server = koa();
 
 server.keys = policy.keys;
-
-// server.use (session(policy));
-// server.use (web(policy));
+server.use (session(policy));
+server.use (web(policy));
 
 module.exports = server;
