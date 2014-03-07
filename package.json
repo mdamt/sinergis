@@ -41,6 +41,7 @@
     "co-body": "0.0.1",
     "thunkify": "0.0.1",
     "koa-static": "~1.4.3",
-    "koa-session-store": "~0.1.0"
+    "koa-session-store": "~0.1.0",
+    "kasta": "0.0.1"
   }
 }

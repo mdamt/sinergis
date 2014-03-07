@@ -1,9 +1,12 @@
-var server = require (__dirname + "/../");
+var sinergis = require (__dirname + "/../");
+var policy = require (__dirname + "/../config/policy.example");
 var app = require ("./app");
 var api = require ("./api");
 
-server.use (app());
-server.use (api());
+var server = sinergis(policy);
+
+server.use (app(policy));
+server.use (api(policy));
 
 server.listen (3000);
 
