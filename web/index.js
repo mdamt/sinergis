@@ -1,4 +1,3 @@
-
 /**
  * Module dependencies.
  */
@@ -8,6 +7,8 @@ var compose = require ("koa-compose");
 var thunkify = require ("thunkify");
 var door = require ("./lib/door");
 var parse = require ("co-body");
+var fs = require ("fs");
+var path = require ("path");
 
 // models
 var User = require ("./models/user");
@@ -19,19 +20,26 @@ var Router = require ("koa-router");
 module.exports = function (policy) {
   
   var router = new Router();
+  var app = policy.app || {};
+  var dir = app.path + "/views";
+  var login = policy.login ? (path.extname (policy.login) ? policy.login : (policy.login + ".html")) : "login.html";
+  var overridden = fs.existsSync (dir + "/" + login);
 
   router.get("/login", function * (next) {
     if (this.session.user) {
       this.redirect("/");
     } else {
-      this.body = yield render ("index");  
+      if (overridden) {
+        this.body = yield render(dir)("login");  
+      } else {
+        this.body = yield render()("index");    
+      }
     }
   });
 
   router.post("/login", function * (next) {
-
+    
     try {
-
       // @todo: check to database via user model, user model can fetch the data directly from db or api
       var body = yield parse(this, { limit: '1kb' });
       var user = yield get(body.username);

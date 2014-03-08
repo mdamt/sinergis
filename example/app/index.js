@@ -16,5 +16,9 @@ module.exports = function (policy){
   app.use (serve (__dirname + "/dist/public"));
   app.use (router.middleware());
 
-  return mount(app);
+  return {
+    mount : mount(app),
+    path : __dirname,
+    type : "app"
+  }
 }

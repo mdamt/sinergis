@@ -6,5 +6,10 @@ module.exports = function (policy){
   router.get ("/api/1/users", function * (next){
     this.body = ["badu", "budi", "wati"];
   });
-  return router.middleware();
+
+  return {
+    mount : router.middleware(),
+    path : __dirname,
+    type : "api"
+  }
 }
