@@ -10,10 +10,6 @@ var parse = require ("co-body");
 var fs = require ("fs");
 var path = require ("path");
 
-// models
-var User = require ("./models/user");
-var get = thunkify(User.get);
-
 // router class
 var Router = require ("koa-router");
 
@@ -24,6 +20,10 @@ module.exports = function (policy) {
   var dir = app.path + "/views";
   var login = policy.login ? (path.extname (policy.login) ? policy.login : (policy.login + ".html")) : "login.html";
   var overridden = fs.existsSync (dir + "/" + login);
+
+  // models
+  var User = policy.User || require ("./models/user");
+  var get = thunkify(User.get);
 
   router.get("/login", function * (next) {
     if (this.session.user) {

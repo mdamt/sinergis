@@ -1,5 +1,6 @@
 var web = require (__dirname + "/web");
 var session = require ("koa-session-store");
+var path = require ("path");
 var koa = require ("koa");
 
 var types = {
@@ -21,18 +22,35 @@ module.exports = function (policy) {
   server.mount = function (mids) {
     
     var i = mids.length;
+
     while (i--) {
       var mid = mids[i];
 
       // if an app
+      // @todo stackable app
       if (mid.type == types.APP) {
+        
         policy.app = policy.app || {};
         policy.app.path = mid.path;  
-      }
 
-      // if an api
-      // @todo setup altering policy to be implemented in web stack
-    };
+      } else if (mid.type == types.API) {
+
+        var root = mid.path + "/endpoints";
+        var endpoints = require (path.resolve(root));
+        var routes = endpoints().routes;
+
+        for (var j = 0; j < routes.length ; j++) {
+          // @todo put this to be configurable
+          // @todo put this to be via HTTP
+          var route = routes[j];
+          if (route.name == "users") {
+            var model = root + "/users/models/user";
+            policy.User = require(path.resolve(model));
+            break;
+          }
+        }
+      }
+    }
 
     // add the webstack
     server.use (web(policy));
