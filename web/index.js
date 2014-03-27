@@ -45,7 +45,7 @@ module.exports = function (policy) {
       var user = yield authFunction(body.username, body.password);
 
       if (user) {
-        this.session.user = user.id;
+        this.session.user = user;
         // this.session.jwt = 
         // this.session.sid = 
 
