@@ -66,5 +66,5 @@ module.exports = function (policy) {
     this.redirect("/login");
   });
 
-  return compose ([router.middleware(), door()]);
+  return compose ([router.middleware(), door(policy)]);
 }
