@@ -8,10 +8,10 @@ module.exports = function (options) {
 
     // @todo: if it has jwt token, honors it, it should go directly to api
     // the priority: jwt then cookie
-
     var login = this.path == options.login;
 
-    if (this.session.user) {
+    // now we by pass api call, be careful!
+    if (this.session.user || this.path.indexOf("/api") >= 0 ) {
 
       if (login) {
         
@@ -27,23 +27,10 @@ module.exports = function (options) {
     } else {
 
       this.invalid = true; //it can be expired or simply a fresh request
-
       // @todo throw error, and push reload (if an api call)
       // this.throw (403);
-
-      var anonymous = false;
-      if (options.app && options.app.anonymousPaths) {
-        var anonymousPaths = options.app.anonymousPaths;
-        for (var i = 0; i < anonymousPaths.length; i ++) {
-          if (this.path.substr(0, anonymousPaths[i].length) == anonymousPaths[i]) {
-            anonymous = true;
-            break;
-          }
-        }
-      }
       // if seeking for login page, send it to the right middleware
-      // Also applies to anonymous pages
-      if (this.path == options.login || anonymous) {
+      if (this.path == options.login) {
         yield next;
       } else {
         // since this request doesn't have a valid session, then send it to login handler
