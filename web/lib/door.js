@@ -10,19 +10,19 @@ module.exports = function (options) {
     // the priority: jwt then cookie
     var login = this.path == options.login;
 
+    // session 
+    this.session = this.session || {};
+
     // now we by pass api call, be careful!
-    if (this.session.user || this.path.indexOf("/api") >= 0 ) {
+    if (this.session.user || this.path.indexOf("/api") >= 0) {
 
       if (login) {
-        
-        // get app root
         this.redirect ("/");
-
       } else {
-        
-        // @todo: check session's validity
         yield next;
       }
+
+      // yield next;
 
     } else {
 
@@ -33,9 +33,13 @@ module.exports = function (options) {
       if (this.path == options.login) {
         yield next;
       } else {
-        // since this request doesn't have a valid session, then send it to login handler
-        this.redirect (options.login);  
+        this.redirect ( "/" + options.login);
       }
+
+      //} else {
+        // since this request doesn't have a valid session, then send it to login handler
+        // this.redirect (options.login);  
+      //}
     }
   };
 }

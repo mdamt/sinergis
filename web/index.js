@@ -26,6 +26,7 @@ module.exports = function (policy) {
   var authenticate = thunkify(auth);
 
   router.get("/login", function * (next) {
+    this.session = this.session || {};
     if (this.session.user) {
       this.redirect("/");
     } else {
@@ -52,24 +53,25 @@ module.exports = function (policy) {
       var user = yield authenticate(options);
 
       if (user) {
+        this.session = this.session || {};
         this.session.user = user;
         // this.session.jwt = 
         // this.session.sid = 
+        // this.redirect("/");
         this.redirect("/");
 
       } else {
-        this.session = null;
         this.redirect("/login");
       }
 
     } catch (err) {
-      console.log (err);
+      this.session = null;
       this.redirect("/login");
     }
   });
 
   router.all("/logout", function * (next) {
-    this.session = null;
+    this.session = {};
     this.redirect("/login");
   });
 

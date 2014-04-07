@@ -45,21 +45,6 @@ module.exports = function (policy) {
         var routes = endpoints().routes;
 
         policy.apiServer = mid;
-
-        // Check policy.api existence first or just assume it's defined in the policy?
-        //var apiEndpoints = policy.api.endpoints || {};
-
-        /*for (var j = 0; j < routes.length ; j++) {
-          // @todo put this to be via HTTP
-          var route = routes[j];
-          if (apiEndpoints[route.name]) {
-            var data = apiEndpoints[route.name];
-            if (data.model && data.policy) {
-              var model = root + data.model;
-              policy[data.policy] = require(path.resolve(model));
-            }
-          }
-        }*/
       }
     }
 
@@ -70,6 +55,7 @@ module.exports = function (policy) {
     
     while (i--) {
       var mid = mids[i];
+      
       if (mid.statics) {
         statics = statics.concat(mid.statics);
       }
