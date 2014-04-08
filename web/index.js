@@ -65,7 +65,7 @@ module.exports = function (policy) {
       }
 
     } catch (err) {
-      this.session = null;
+      this.session = {};
       this.redirect("/login");
     }
   });
