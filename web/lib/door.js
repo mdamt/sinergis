@@ -14,7 +14,8 @@ module.exports = function (options) {
     this.session = this.session || {};
 
     // now we by pass api call, be careful! -- we should have access token here
-    if (this.session.user || this.path.indexOf("/api") >= 0) {
+    // if this.query, or headers, thea bearer yeah the bearer!!!
+    if (this.session.user || this.path.indexOf("/account/login") >= 0) {
 
       if (login) {
         this.redirect ("/");
