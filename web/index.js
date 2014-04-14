@@ -3,15 +3,13 @@
  */
 var render = require ("./lib/render");
 var compose = require ("koa-compose");
+var Router = require ("koa-router");
 var thunkify = require ("thunkify");
 var door = require ("./lib/door");
-var parse = require ("co-body");
-var fs = require ("fs");
-var path = require ("path");
 var auth = require ("./lib/auth");
-
-// router class
-var Router = require ("koa-router");
+var parse = require ("co-body");
+var path = require ("path");
+var fs = require ("fs");
 
 module.exports = function (policy) {
 
@@ -22,7 +20,6 @@ module.exports = function (policy) {
   var dir = app.path + "/views";
   var login = policy.login ? (path.extname (policy.login) ? policy.login : (policy.login + ".html")) : "login.html";
   var overridden = fs.existsSync (dir + "/" + login);
-
   var authenticate = thunkify(auth);
 
   router.get("/login", function * (next) {
@@ -59,6 +56,7 @@ module.exports = function (policy) {
         // this.session.sid = 
         // this.redirect("/");
         this.redirect("/");
+
 
       } else {
         this.redirect("/login");

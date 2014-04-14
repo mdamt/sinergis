@@ -1,84 +1,59 @@
-var web = require (__dirname + "/web");
 var session = require ("koa-session-store");
+var web = require (__dirname + "/web");
+var favicon = require ("koa-favicon");
+var mount = require ("koa-mount");
+var qsify = require ("koa-qs");
 var path = require ("path");
 var koa = require ("koa");
-var qsified = require ("koa-qs");
-
-var types = {
-  API : "api",
-  APP : "app"
-}
 
 module.exports = function (policy) {
 
   var policy = policy || {};
-
-  var server = koa();
+  var server = qsify(koa());
 
   // basic setups
-  qsified(server);
   server.keys = policy.keys;
   server.use (session(policy));
-  server.types = types;
+  server.use (favicon());
 
-  server.mount = function (mids, cb) {
+  return function (mids, cb) {
 
     var statics = [];
-    var connect;
     
     var i = mids.length;
 
+    // api or apps -- we can have many apps, but we only have one main app
     while (i--) {
       var mid = mids[i];
 
-      // if an app
-      // @todo stackable app
-      if (mid.type == types.APP) {
+      if (mid.mount) {
         
-        policy.app = policy.app || {};
-        policy.app.path = mid.path;
+        // if main app
+        if (mid.main) {
+          policy.app = policy.app || {};
+          policy.app.path = mid.path;
+          server.use (web(policy));
+        }
 
-      } else if (mid.type == types.API) {
+        server.use (mid.mount);
 
-        var root = mid.path + "/endpoints";
-        var endpoints = require (path.resolve(root));
-        var routes = endpoints().routes;
-
-        policy.apiServer = mid;
+      } else {
+        server.use (mount(mid));
       }
-    }
 
-    // add the webstack
-    server.use (web(policy));
-    
-    i = mids.length; // bottom up!
-    
-    while (i--) {
-      var mid = mids[i];
-      
       if (mid.statics) {
         statics = statics.concat(mid.statics);
       }
-
-      if (mid.connect) {
-        connect = mid.connect;
-      }
-
-      server.use (mid.mount, policy);
     }
 
     i = statics.length;
 
+    var files = {};
+
     while (i--) {
-      server.middleware.unshift(statics[i]);  
+      server.middleware.unshift(statics[i]);
     }
 
-    if (connect) {
-      return connect(cb);
-    }
-
-    cb(new Error("no connection to db"));
+    return server;
   }
-
-  return server;
 }

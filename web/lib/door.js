@@ -13,7 +13,7 @@ module.exports = function (options) {
     // session 
     this.session = this.session || {};
 
-    // now we by pass api call, be careful!
+    // now we by pass api call, be careful! -- we should have access token here
     if (this.session.user || this.path.indexOf("/api") >= 0) {
 
       if (login) {
@@ -21,8 +21,6 @@ module.exports = function (options) {
       } else {
         yield next;
       }
-
-      // yield next;
 
     } else {
 
