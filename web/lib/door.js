@@ -10,7 +10,7 @@ module.exports = function (options) {
     // the priority: jwt then cookie
     var login = this.path == options.login;
 
-    // session 
+    // session
     this.session = this.session || {};
 
     // now we by pass api call, be careful! -- we should have access token here
@@ -32,13 +32,15 @@ module.exports = function (options) {
       if (this.path == options.login) {
         yield next;
       } else {
-        this.redirect ( "/" + options.login);
-      }
+        
+        if (this.path.indexOf("/api/") >= 0) {
+          this.status = 401;
+          this.body = {"error" : "invalid session"};
+        } else {
+          return this.redirect ( "/" + options.login);
+        }
 
-      //} else {
-        // since this request doesn't have a valid session, then send it to login handler
-        // this.redirect (options.login);  
-      //}
+      }
     }
   };
 }

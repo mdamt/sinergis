@@ -1,7 +1,8 @@
 var session = require ("koa-session-store");
 var web = require (__dirname + "/web");
-var favicon = require ("koa-favicon");
+var favicon = require ("koa-favi");
 var mount = require ("koa-mount");
+var csrfy = require ("koa-csrf");
 var qsify = require ("koa-qs");
 var path = require ("path");
 var koa = require ("koa");
@@ -9,17 +10,20 @@ var koa = require ("koa");
 module.exports = function (policy) {
 
   var policy = policy || {};
-  var server = qsify(koa());
+  var app = koa();
+  csrfy(app);
+  qsify(app);
+  var server = app;
 
   // basic setups
   server.keys = policy.keys;
   server.use (session(policy));
-  server.use (favicon());
+  server.use (favicon(policy.favicon || __dirname + "/web/icon.png"));
 
   return function (mids, cb) {
 
     var statics = [];
-    
+
     var i = mids.length;
 
     // api or apps -- we can have many apps, but we only have one main app
@@ -27,7 +31,7 @@ module.exports = function (policy) {
       var mid = mids[i];
 
       if (mid.mount) {
-        
+
         // if main app
         if (mid.main) {
           policy.app = policy.app || {};

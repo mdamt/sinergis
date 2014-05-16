@@ -28,9 +28,11 @@ module.exports = function (policy) {
       this.redirect("/");
     } else {
       if (overridden) {
-        this.body = yield render(dir)("login");  
+        var error = this.session.error;
+        this.body = yield render(dir)("login", { error : error, csrf : this.csrf });
+        delete this.session.error;
       } else {
-        this.body = yield render()("index");    
+        this.body = yield render()("index");
       }
     }
   });
@@ -39,6 +41,8 @@ module.exports = function (policy) {
     try {
       // @todo: check to database via user model, user model can fetch the data directly from db or api
       var body = yield parse(this, { limit: '1kb' });
+
+      this.assertCSRF(body);
 
       var options = {
         username : body.username,
@@ -52,18 +56,19 @@ module.exports = function (policy) {
       if (user) {
         this.session = this.session || {};
         this.session.user = user;
-        // this.session.jwt = 
-        // this.session.sid = 
+        this.session.ip = this.ip;
+        this.session.ips = this.ips;
+        // this.session.jwt =
+        // this.session.sid =
         // this.redirect("/");
         this.redirect("/");
-
 
       } else {
         this.redirect("/login");
       }
 
     } catch (err) {
-      this.session = {};
+      this.session = { error : err };
       this.redirect("/login");
     }
   });

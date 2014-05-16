@@ -1,6 +1,6 @@
 var koa = require ("koa");
 var mount = require ("koa-mount");
-var request = require ("request");
+var request = require ("hyperquest");
 
 module.exports = function (options, cb) {
 
@@ -10,7 +10,7 @@ module.exports = function (options, cb) {
   var auth = app.auth || {};
   var api = policy.api || {};
   var server = policy.server || {};
-    
+
   var host = api.uri || server.uri || "http://127.0.0.1";
   var port = api.port || server.port || 3000;
   var url = host.concat(":", port);
@@ -23,9 +23,9 @@ module.exports = function (options, cb) {
   };
   credential[local.username || "username"] = options.username;
   credential[local.password || "password"] = options.password;
-  
+
   if (options.mock) {
-    return cb(null, { email : "dudung.surudung@jamkrindo.com", roles : ["user", "letter"]});
+    return cb(null, { email : "cumi@asam.com", roles : ["user", "letter"]});
   }
 
   var data = {
@@ -43,20 +43,23 @@ module.exports = function (options, cb) {
     }
   };*/
 
-  request.post(data, function(err, res, body){
-    
-    if (err) {
-      return cb (err);
-    }
-
-    if (res.statusCode != 200) {
-      // todo: the api should always return valid json in its body
-      return cb (new Error ("invalid username or password"));
-    }
-
+  // using the infamous hyperquest!
+  var r = request.post(data.url, { headers : { "Content-Type" : "application/json"}});
+  r.end(data.body);
+  var body = "";
+  var success = true;
+  r.on("error", function(res){
+    cb(new Error("system error"));
+  });
+  r.on("response", function(res){
+    success = res.statusCode == 200;
+  });
+  r.on("data", function (buf) { body += buf; });
+  r.on("end", function () {
     try {
       var obj = JSON.parse(body);
-      cb(null, obj);
+      if (!success) return cb(obj);
+      return cb (null, obj);
     } catch (err) {
       cb (err);
     }
